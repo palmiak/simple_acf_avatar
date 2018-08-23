@@ -3,7 +3,7 @@
 Plugin Name: Simple ACF Avatar
 Description: A very simple plugin for adding user avatars with Advanced Custom Fields
 Author: Maciej Palmowski
-Version: 1.0.0
+Version: 1.0.1
 Author URI: https://pandify.pl
 */
 
@@ -34,7 +34,7 @@ if( ! class_exists( 'simpleAcfAvatar' ) ){
             }
             
             if ( $user && is_object( $user ) ) {
-                if ( '' != get_field( 'avatar', 'user_'.$user->data->ID ) ) {
+                if ( '' != get_field( $this->acf_field_name, 'user_'.$user->data->ID ) ) {
                     $url = wp_get_attachment_image_src( get_field( $this->acf_field_name, 'user_' . $user->data->ID ), $this->avatar_size )[0];
                 } elseif ( $this->gravatars === false ) {
                     $url = '//2.gravatar.com/avatar/e709a9ddafc430751cabdb5d59382732?s=32&d=blank&f=y&r=g';
@@ -50,19 +50,13 @@ if( ! class_exists( 'simpleAcfAvatar' ) ){
                 } );
             }
         }
-
-        function plugin_load() {
-            add_filter( 'get_avatar_url' , [ $this, 'acf_avatar_url' ] , 1 , 10 );
-            add_filter( 'init' , [ $this, 'disable_gravatars' ] );
-        }
-
     }
 }
 
 
 function simple_acf_avatar_run() {
     $simple_acf_avatar = new simpleAcfAvatar();
-    add_filter( 'get_avatar_url' , [ $simple_acf_avatar, 'acf_avatar_url' ] , 1 , 10 );
+    add_filter( 'get_avatar_url' , [ $simple_acf_avatar, 'acf_avatar_url' ] , 10 , 3 );
     add_filter( 'init' , [ $simple_acf_avatar, 'disable_gravatars' ] );
 }
 add_action( 'init', 'simple_acf_avatar_run' );
